@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="TinyDiscordAPI:jar">
+    <output-path>$USER_HOME$/Desktop</output-path>
+    <root id="archive" name="TinyDiscordAPI.jar">
+      <element id="module-output" name="TinyDiscordAPI" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../JsonParser/out/artifacts/JsonParser_jar/JsonParser.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
