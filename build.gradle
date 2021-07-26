@@ -1,0 +1,16 @@
+plugins {
+    id 'java'
+}
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    maven{url 'https://jitpack.io'}
+}
+
+dependencies {
+    compile 'junit:junit:4.12'
+    compile 'com.github.WavJaby:TinyJson:v0.0.0'
+}
