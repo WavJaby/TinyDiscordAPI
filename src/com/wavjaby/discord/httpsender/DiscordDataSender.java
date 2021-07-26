@@ -87,7 +87,7 @@ public class DiscordDataSender {
             byte[] buff = new byte[1024];
             StringBuilder builder = new StringBuilder();
             int length;
-            //讀到結束
+            //when readed it end
             while ((length = in.read(buff)) > 0) {
                 builder.append(new String(buff, 0, length));
             }

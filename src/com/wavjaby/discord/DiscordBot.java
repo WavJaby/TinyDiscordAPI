@@ -63,7 +63,7 @@ public class DiscordBot implements Client.OnMessage {
         this.discordGatewayURL = gatewayInfo.getString("url");
 
         gateway = new Client();
-        //連接狀態
+        //the status of connection
         gateway.onConnectEvent(new Client.ConnectionEvent() {
             @Override
             public void openConnection() {
@@ -76,7 +76,7 @@ public class DiscordBot implements Client.OnMessage {
                 stopBot();
             }
         });
-        //當接收到訊息
+        //when it receive messeage
         gateway.onMessageEvent(this);
     }
 
@@ -90,7 +90,7 @@ public class DiscordBot implements Client.OnMessage {
     }
 
     public void connect() {
-        //連接gateway
+        //connect to gateway
         gateway.openConnection(discordGatewayURL, "v=" + apiVersion + "&encoding=json", 443);
     }
 
@@ -126,16 +126,16 @@ public class DiscordBot implements Client.OnMessage {
                 //init HartBeat system
                 clientHartBeat = new HeartBeat(this, data.getLong("heartbeat_interval") - 1500);
                 break;
-            //要求心跳
+            //request heartbeat
             case Opcode.Heartbeat:
                 System.out.println("Want Heartbeat");
                 clientHartBeat.heartBeat();
                 break;
-            //心跳回傳
+            //return heartbeat
             case Opcode.HeartbeatACK:
                 System.out.println("Discord Get Heartbeat");
                 break;
-            //event 資料
+            //the data of the event
             case Opcode.Dispatch: {
                 EventType type = EventType.valueOf(event);
                 switch (type) {
