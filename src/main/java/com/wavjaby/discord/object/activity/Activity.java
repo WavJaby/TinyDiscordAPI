@@ -8,13 +8,6 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-/*
- * TODO
- * Fix Libary Dependency Problem: com.wavjaby.json.JsonBuilder
- * Suggestion: Use Gradle and Jitpack to solve it
- *
- */
-
 public class Activity {
     private String name;
     private int type;
