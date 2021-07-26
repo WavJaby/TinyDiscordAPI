@@ -15,16 +15,16 @@ import static com.wavjaby.discord.values.gateway.EventType.READY;
 
 public class DiscordEventHandler {
     private final DiscordBot bot;
-    private final DiscordDataSender httpSender;
+    private final DiscordDataSender dataSender;
 
     private int length = 0;
     private DiscordEvent[] eventHandlers = new DiscordEvent[2];
 
     boolean guildReady;
 
-    DiscordEventHandler(DiscordBot bot, DiscordDataSender httpSender) {
+    DiscordEventHandler(DiscordBot bot, DiscordDataSender dataSender) {
         this.bot = bot;
-        this.httpSender = httpSender;
+        this.dataSender = dataSender;
     }
 
     void onEvent(EventType type, JsonObject data) {
@@ -38,7 +38,7 @@ public class DiscordEventHandler {
             case READY:
                 break;
             case GUILD_CREATE:
-                Guild guild = new Guild(data, httpSender);
+                Guild guild = new Guild(data, dataSender);
                 bot.guilds.put(guild.getID(), guild);
                 if (guildReady)
                     forEach(i -> i.onGuildReady(guild));

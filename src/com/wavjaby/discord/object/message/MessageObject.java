@@ -1,6 +1,6 @@
 package com.wavjaby.discord.object.message;
 
-import com.wavjaby.discord.DiscordBot;
+import com.wavjaby.discord.httpsender.DiscordDataSender;
 import com.wavjaby.discord.object.channel.Channel;
 import com.wavjaby.discord.object.channel.ChannelMention;
 import com.wavjaby.discord.object.guild.Guild;
@@ -56,20 +56,26 @@ public class MessageObject {
     //send
     private String payload_json;
     private List<AllowedMention> allowed_mentions;
+
     //other
     private Guild guild;
+    private Channel channel;
+    private DiscordDataSender dataSender;
 
     public MessageObject() {
     }
 
-    public MessageObject(JsonObject messageData, DiscordBot bot) {
+    public MessageObject(JsonObject messageData, Guild guild, DiscordDataSender dataSender) {
+        this.dataSender = dataSender;
+
         id = messageData.getString("id");
         channel_id = messageData.getString("channel_id");
+        channel = guild.getChannelByID(channel_id);
         guild_id = messageData.getString("guild_id");
-        guild = bot.getGuildByID(guild_id);
+        this.guild = guild;
         author = new User(messageData.get("author"));
         if (messageData.containsKey("member"))
-            member = new Member(messageData.get("member"), bot.getGuildByID(guild_id));
+            member = new Member(messageData.get("member"), guild);
         content = messageData.getString("content");
         if (messageData.containsKey("timestamp"))
             timestamp = OffsetDateTime.parse(messageData.getString("timestamp"));
@@ -79,13 +85,13 @@ public class MessageObject {
         mention_everyone = messageData.getBoolean("mention_everyone");
         mentions = new HashMap<>();
         for (Object i : messageData.getJsonArray("mentions")) {
-            Member member = new Member((JsonObject) i, bot.getGuildByID(guild_id));
+            Member member = new Member((JsonObject) i, guild);
             mentions.put(member.getID(), member);
         }
         mention_roles = new HashMap<>();
         for (Object i : messageData.getJsonArray("mention_roles")) {
             String roleID = ((JsonObject) i).getString("id");
-            mention_roles.put(roleID, bot.getGuildByID(guild_id).getRoleByID(roleID));
+            mention_roles.put(roleID, guild.getRoleByID(roleID));
         }
         if (messageData.containsKey("mention_channels")) {
             mention_channels = new ArrayList<>();
@@ -120,7 +126,7 @@ public class MessageObject {
             message_reference = new MessageReference(messageData.get("message_reference"));
         flags = messageData.getInteger("flags");
         if (messageData.notNull("referenced_message"))
-            referenced_message = new MessageObject(messageData.get("referenced_message"), bot);
+            referenced_message = channel.getMessageByID(messageData.get("referenced_message").getString("id"));
         if (messageData.containsKey("interaction"))
             interaction = new MessageInteraction(messageData.get("interaction"));
         if (messageData.containsKey("thread"))
@@ -159,6 +165,7 @@ public class MessageObject {
         this.content = content;
     }
 
+    //setter
     public void setContent(String content) {
         this.content = content;
     }
@@ -177,7 +184,6 @@ public class MessageObject {
         return embed;
     }
 
-
     public Component addActionRow() {
         if (components == null)
             components = new ArrayList<>();
@@ -186,8 +192,18 @@ public class MessageObject {
         return component;
     }
 
-    public Channel getChannel() {
-        return guild.getChannelByID(channel_id);
+    public void setEmbed(List<Embed> embeds) {
+        this.embeds = embeds;
+    }
+
+    public void editFirstEmbed(Embed embed) {
+        embeds.set(0, embed);
+        checkEdit();
+    }
+
+    private void checkEdit(){
+        if(channel_id != null && id != null)
+            dataSender.editMessage(this);
     }
 
     @Override
@@ -210,11 +226,20 @@ public class MessageObject {
         return builder.toString();
     }
 
-    public void setEmbed(List<Embed> embeds) {
-        this.embeds = embeds;
+    //getter
+    public Channel getChannel() {
+        return guild.getChannelByID(channel_id);
     }
 
-    public String getId() {
+    public Embed getEmbed(int index) {
+        return embeds.get(index);
+    }
+
+    public Embed getFirstEmbed() {
+        return embeds.get(0);
+    }
+
+    public String getID() {
         return id;
     }
 

@@ -34,7 +34,7 @@ public class DiscordBot implements Client.OnMessage {
     //function
     private final Client gateway;
     private HeartBeat clientHartBeat;
-    DiscordDataSender httpSender;
+    DiscordDataSender dataSender;
     DiscordEventHandler eventHandler;
 
     //use for resume
@@ -54,10 +54,10 @@ public class DiscordBot implements Client.OnMessage {
         this.botToken = botToken;
         this.apiVersion = apiVersion;
 
-        httpSender = new DiscordDataSender(this, botToken, apiVersion);
-        eventHandler = new DiscordEventHandler(this, httpSender);
+        dataSender = new DiscordDataSender(this, botToken, apiVersion);
+        eventHandler = new DiscordEventHandler(this, dataSender);
         //get gatewayInfo
-        JsonObject gatewayInfo = new JsonObject(httpSender.getGatewayURL());
+        JsonObject gatewayInfo = new JsonObject(dataSender.getGatewayURL());
 
         //get url
         this.discordGatewayURL = gatewayInfo.getString("url");

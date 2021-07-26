@@ -1,6 +1,7 @@
 package com.wavjaby.discord.object.channel;
 
 import com.wavjaby.discord.httpsender.DiscordDataSender;
+import com.wavjaby.discord.object.guild.Guild;
 import com.wavjaby.discord.object.message.MessageObject;
 import com.wavjaby.discord.object.permission.PermissionOverwrite;
 import com.wavjaby.discord.object.user.User;
@@ -39,9 +40,14 @@ public class Channel {
 
     //other
     private DiscordDataSender dataSender;
+    private Guild guild;
+    private Map<String, MessageObject> messages;
 
-    public Channel(JsonObject channelData, DiscordDataSender dataSender) {
+
+    public Channel(JsonObject channelData, Guild guild, DiscordDataSender dataSender) {
         this.dataSender = dataSender;
+        this.guild = guild;
+        messages = new HashMap<>();
 
         id = channelData.getString("id");
         type = channelData.getInteger("type");
@@ -97,6 +103,21 @@ public class Channel {
         dataSender.sendMessage(id, messageObject);
     }
 
+
+    public MessageObject getMessageByID(String messageID) {
+        MessageObject message = messages.get(messageID);
+        if (message == null) {
+            String result = dataSender.getMessage(id, messageID);
+            if (result == null)
+                return null;
+            message = new MessageObject(new JsonObject(result), guild, dataSender);
+            messages.put(messageID, message);
+        }
+        return message;
+    }
+
+
+    //getter
     public String getID() {
         return id;
     }
@@ -105,7 +126,7 @@ public class Channel {
         return type;
     }
 
-    public String getGuild_id() {
+    public String getGuildID() {
         return guild_id;
     }
 

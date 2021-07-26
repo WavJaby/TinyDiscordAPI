@@ -12,8 +12,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 
 public class DiscordDataSender {
     private final String TAG = "[MessageSender]";
@@ -39,11 +37,24 @@ public class DiscordDataSender {
                 message.toString());
     }
 
+    public void editMessage(MessageObject message) {
+        sendRequest("/channels/" + message.getChannelID() + "/messages/" + message.getID(),
+                "PATCH",
+                message.toString());
+    }
+
+    public String getMessage(String channelID, String messageID) {
+        return sendRequest("/channels/" + channelID + "/messages/" + messageID,
+                "GET",
+                null);
+    }
 //    public List<SlashCommand> getGuildSlashCommand(String id) {
 //        List<SlashCommand> slashCommands = new ArrayList<>();
 //
 //        slashCommands.add();
+
 //        return;
+
 //    }
 
     public String getGatewayURL() {

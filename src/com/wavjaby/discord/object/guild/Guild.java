@@ -128,7 +128,7 @@ public class Guild {
         channels = new HashMap<>();
         if (guildData.containsKey("channels"))
             for (Object i : guildData.getJsonArray("channels")) {              //?
-                Channel channel = new Channel((JsonObject) i, dataSender);
+                Channel channel = new Channel((JsonObject) i, this, dataSender);
                 channels.put(channel.getID(), channel);
             }
         if (guildData.containsKey("channels"))
