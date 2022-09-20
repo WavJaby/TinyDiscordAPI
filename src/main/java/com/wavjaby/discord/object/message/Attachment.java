@@ -16,13 +16,13 @@ public class Attachment {
         id = attachmentData.getString("id");
         filename = attachmentData.getString("filename");
         content_type = attachmentData.getString("content_type");
-        size = attachmentData.getInteger("size");
+        size = attachmentData.getInt("size");
         url = attachmentData.getString("url");
         proxy_url = attachmentData.getString("proxy_url");
         if(attachmentData.containsKey("height"))
-            height = attachmentData.getInteger("height");
+            height = attachmentData.getInt("height");
         if(attachmentData.containsKey("width"))
-            width = attachmentData.getInteger("width");
+            width = attachmentData.getInt("width");
     }
 
     public String getId() {

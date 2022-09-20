@@ -14,6 +14,6 @@ public class ThreadMember {
         id = memberData.getString("id");
         user_id = memberData.getString("user_id");
         join_timestamp = OffsetDateTime.parse(memberData.getString("join_timestamp"));
-        flags = memberData.getInteger("flags");
+        flags = memberData.getInt("flags");
     }
 }

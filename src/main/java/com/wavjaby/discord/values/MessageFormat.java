@@ -1,5 +1,7 @@
 package com.wavjaby.discord.values;
 
+import com.wavjaby.discord.object.guild.Emoji;
+
 public class MessageFormat {
     //User	                    <@USER_ID>	        <@80351110224678912>
     //User (Nickname)	        <@!USER_ID>	        <@!80351110224678912>
@@ -13,5 +15,9 @@ public class MessageFormat {
 
     public static String getUnixTimestamp(long time, char style) {
         return "<t:" + time + ':' + style + '>';
+    }
+
+    public static String getEmojiMention(Emoji emoji) {
+        return "<:" + emoji.getName() + ":" + emoji.getID() + ">";
     }
 }

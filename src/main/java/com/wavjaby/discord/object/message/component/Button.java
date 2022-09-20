@@ -15,10 +15,10 @@ public class Button extends Component {
 
     public Button(JsonObject buttonData) {
         type = ComponentType.BUTTON;
-        style = buttonData.getInteger("style");
+        style = buttonData.getInt("style");
         label = buttonData.getString("label");
         if (buttonData.containsKey("emoji"))
-            emoji = new Emoji(buttonData.get("emoji"));
+            emoji = new Emoji(buttonData.getJson("emoji"));
         custom_id = buttonData.getString("custom_id");
         url = buttonData.getString("url");
         if (buttonData.containsKey("disabled"))

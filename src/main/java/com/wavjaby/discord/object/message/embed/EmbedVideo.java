@@ -13,9 +13,9 @@ public class EmbedVideo {
         url = videoData.getString("url");
         proxy_url = videoData.getString("proxy_url");
         if (videoData.containsKey("height"))
-            height = videoData.getInteger("height");
+            height = videoData.getInt("height");
         if (videoData.containsKey("width"))
-            width = videoData.getInteger("width");
+            width = videoData.getInt("width");
     }
 
     public String getUrl() {

@@ -1,8 +1,11 @@
 package com.wavjaby.discord.httpsender;
 
+import com.wavjaby.discord.MultiPartData;
 import com.wavjaby.discord.DiscordBot;
 import com.wavjaby.discord.object.message.MessageObject;
 import com.wavjaby.discord.object.slashcommand.SlashCommand;
+import com.wavjaby.json.JsonArray;
+import com.wavjaby.json.JsonObject;
 import sun.net.www.protocol.https.HttpsURLConnectionImpl;
 
 import java.io.IOException;
@@ -10,8 +13,9 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DiscordDataSender {
     private final String TAG = "[MessageSender]";
@@ -25,92 +29,156 @@ public class DiscordDataSender {
         httpURL = "https://discordapp.com/api/v" + apiVersion;
     }
 
-    public void addGuildSlashCommand(String guildID, SlashCommand command) {
-        sendRequest("/applications/" + bot.application.getID() + "/guilds/" + guildID + "/commands",
+    public SlashCommand addGuildSlashCommand(String guildID, SlashCommand command) {
+        HttpURLConnection connection = sendRequestNoResponse("/applications/" + bot.application.getID() + "/guilds/" + guildID + "/commands",
                 "POST",
                 command.toString());
+        try {
+            String responseText = readResponse(connection.getInputStream());
+            if (responseText != null)
+                return new SlashCommand(new JsonObject(responseText));
+            else
+                throw new IOException("Failed to read response");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void sendMessage(String channelID, MessageObject message) {
-        sendRequest("/channels/" + channelID + "/messages",
+        sendRequestNoResponse("/channels/" + channelID + "/messages",
                 "POST",
                 message.toString());
     }
 
     public void editMessage(MessageObject message) {
-        sendRequest("/channels/" + message.getChannelID() + "/messages/" + message.getID(),
-                "PATCH",
-                message.toString());
+        sendRequestNoResponse("/channels/" + message.getChannelID() + "/messages/" + message.getID(), "PATCH", message.toString());
     }
 
     public String getMessage(String channelID, String messageID) {
-        return sendRequest("/channels/" + channelID + "/messages/" + messageID,
-                "GET",
-                null);
+        return sendRequest("/channels/" + channelID + "/messages/" + messageID, "GET");
     }
-//    public List<SlashCommand> getGuildSlashCommand(String id) {
-//        List<SlashCommand> slashCommands = new ArrayList<>();
-//
-//        slashCommands.add();
 
-//        return;
+    public Map<String, SlashCommand> getGuildSlashCommand(String guildID) {
+        Map<String, SlashCommand> slashCommands = new HashMap<>();
+        for (Object i : new JsonArray(
+                sendRequest("/applications/" + bot.application.getID() + "/guilds/" + guildID + "/commands", "GET")
+        )) {
+            SlashCommand command = new SlashCommand((JsonObject) i);
+            slashCommands.put(command.getName(), command);
+        }
 
-//    }
+        return slashCommands;
+    }
+
+    public void removeGuildSlashCommand(String guildID, String commandID) {
+        sendRequest(
+                "/applications/" + bot.application.getID() +
+                        "/guilds/" + guildID +
+                        "/commands/" + commandID,
+                "DELETE");
+    }
 
     public String getGatewayURL() {
-        return sendRequest("/gateway/bot", "GET", null);
+        return sendRequest("/gateway/bot", "GET");
     }
 
-    public String sendRequest(String link, String method, String payload) {
+    public String sendRequest(String endPoint, String method) {
         try {
-            URL url = new URL(httpURL + URLEncoder.encode(link, "UTF8"));
+            HttpURLConnection connection = sendRequestNoResponse(endPoint, method, null, "application/json");
+            if (connection == null) return null;
+            return readResponse(connection.getInputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public String sendRequest(String endPoint, String method, String payload) {
+        try {
+            HttpURLConnection connection = sendRequestNoResponse(
+                    endPoint,
+                    method,
+                    payload == null ? null : payload.getBytes(StandardCharsets.UTF_8),
+                    "application/json"
+            );
+            if (connection == null) return null;
+            return readResponse(connection.getInputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public void sendMultiPart(String endPoint, String method, MultiPartData multiPart) {
+        sendRequestNoResponse(endPoint, method,
+                multiPart.getPayload(),
+                "multipart/form-data; boundary=" + multiPart.getBoundary());
+    }
+
+    public HttpURLConnection sendRequestNoResponse(String endPoint, String method, String payload) {
+        return sendRequestNoResponse(endPoint, method, payload.getBytes(StandardCharsets.UTF_8), "application/json");
+    }
+
+    public HttpURLConnection sendRequestNoResponse(String endPoint, String method, byte[] payload, String contentType) {
+        try {
+            URL url = new URL(httpURL + endPoint);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
-
-            conn.setRequestProperty("Authorization", "Bot " + botToken);
             if (method.equals("PATCH")) {
-                setRequestMethod(conn, "PATCH");
+                setRequestMethod(conn, method);
             } else
                 conn.setRequestMethod(method);
-            conn.setRequestProperty("Content-Type", "application/json");
-            conn.setRequestProperty("User-Agent", "Mozilla/5.0 (compatible; Discordbot/2.0; +https://discordapp.com)");
+            conn.setRequestProperty("Authorization", "Bot " + botToken);
+            conn.setRequestProperty("Content-Type", contentType);
+            conn.setRequestProperty("User-Agent", "DiscordBot (v1.0; https://github.com/WavJaby)");
             conn.setUseCaches(false);
             conn.setDoInput(true);
-            conn.setDoOutput(true);
 
-            //如果有payload
-            if (payload != null && payload.length() > 0) {
-                //寫出
-                conn.getOutputStream().write(payload.getBytes(StandardCharsets.UTF_8));
+            //have payload
+            if (payload != null && payload.length > 0) {
+                conn.setDoOutput(true);
+                conn.setRequestProperty("Content-Length", String.valueOf(payload.length));
+                conn.getOutputStream().write(payload);
             }
-
-            //取得回復
-            InputStream in;
+            //get response code
             if (conn.getResponseCode() > 299) {
                 if (conn.getResponseCode() > 399) {
-                    System.err.println(TAG + "request failed, ResponseCode: " + conn.getResponseCode() + ", URL: " + link);
-                    in = conn.getErrorStream();
-                } else
-                    in = conn.getInputStream();
-            } else
-                in = conn.getInputStream();
+                    System.err.println(TAG + "request failed, ResponseCode: " + conn.getResponseCode() + ", URL: " + endPoint);
+                    String errorString = readResponse(conn.getErrorStream());
+                    System.out.println(errorString);
+                    conn.disconnect();
 
-            byte[] buff = new byte[1024];
+                    return null;
+                }
+                System.out.println(TAG + "warn! ResponseCode: " + conn.getResponseCode() + ", URL: " + endPoint);
+                String warnString = readResponse(conn.getInputStream());
+                System.out.println(warnString);
+                conn.disconnect();
+                return null;
+            }
+            return conn;
+        } catch (IOException e) {
+            e.printStackTrace();
+            bot.stopBot();
+            return null;
+        }
+    }
+
+    private String readResponse(InputStream in) {
+        try {
             StringBuilder builder = new StringBuilder();
+            byte[] buff = new byte[1024];
             int length;
             //when readed it end
             while ((length = in.read(buff)) > 0) {
                 builder.append(new String(buff, 0, length));
             }
-
-            conn.disconnect();
-
+            in.close();
             return builder.toString();
-        } catch (
-                IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
-        return null;
     }
 
     private void setRequestMethod(final HttpURLConnection c, final String value) {

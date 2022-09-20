@@ -34,23 +34,23 @@ public class Embed {
         if (embedData.containsKey("premium_since"))
             timestamp = OffsetDateTime.parse(embedData.getString("timestamp"));
         if (embedData.containsKey("color"))
-            color = embedData.getInteger("color");
+            color = embedData.getInt("color");
         if (embedData.containsKey("footer"))
-            footer = new EmbedFooter(embedData.get("footer"));
+            footer = new EmbedFooter(embedData.getJson("footer"));
         if (embedData.containsKey("image"))
-            image = new EmbedImage(embedData.get("image"));
+            image = new EmbedImage(embedData.getJson("image"));
         if (embedData.containsKey("thumbnail"))
-            thumbnail = new EmbedThumbnail(embedData.get("thumbnail"));
+            thumbnail = new EmbedThumbnail(embedData.getJson("thumbnail"));
         if (embedData.containsKey("video"))
-            video = new EmbedVideo(embedData.get("video"));
+            video = new EmbedVideo(embedData.getJson("video"));
         if (embedData.containsKey("provider"))
-            provider = new EmbedProvider(embedData.get("provider"));
+            provider = new EmbedProvider(embedData.getJson("provider"));
         if (embedData.containsKey("author"))
-            author = new EmbedAuthor(embedData.get("author"));
+            author = new EmbedAuthor(embedData.getJson("author"));
 
         if (embedData.containsKey("fields")) {
             fields = new ArrayList<>();
-            for (Object i : embedData.getJsonArray("fields"))
+            for (Object i : embedData.getArray("fields"))
                 fields.add(new EmbedField((JsonObject) i));
         }
     }
@@ -107,12 +107,20 @@ public class Embed {
     /**
      * setter
      */
+    public void setAuthor(Member member) {
+        this.author = new EmbedAuthor(member.getNick(), member.getUser().getAvatar());
+    }
+
+    public void setImage(EmbedImage image) {
+        this.image = image;
+    }
+
     public void setTitle(String title) {
         this.title = title;
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        this.description = description.replace("\n", "\\n");
     }
 
     public void setFooter(EmbedFooter footer) {
@@ -129,10 +137,6 @@ public class Embed {
 
     public void setAuthor(EmbedAuthor author) {
         this.author = author;
-    }
-
-    public void setAuthor(Member member) {
-        this.author = new EmbedAuthor(member.getNick(), member.getUser().getAvatar());
     }
 
     public void setAuthor(String name, String icon) {

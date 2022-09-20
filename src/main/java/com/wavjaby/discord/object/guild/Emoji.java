@@ -2,12 +2,15 @@ package com.wavjaby.discord.object.guild;
 
 import com.wavjaby.discord.object.message.embed.Embed;
 import com.wavjaby.discord.object.user.User;
+import com.wavjaby.discord.values.MessageFormat;
 import com.wavjaby.json.JsonBuilder;
 import com.wavjaby.json.JsonObject;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.wavjaby.discord.values.MessageFormat.getEmojiMention;
 
 public class Emoji {
     private String id;
@@ -25,14 +28,14 @@ public class Emoji {
 
         if (emojiData.containsKey("roles")) {
             roles = new HashMap<>();
-            for (Object i : emojiData.getJsonArray("roles")) {
+            for (Object i : emojiData.getArray("roles")) {
                 Role role = new Role((JsonObject) i);
                 roles.put(role.getID(), role);
             }
         }
 
         if (emojiData.containsKey("user"))
-            user = new User(emojiData.get("user"));
+            user = new User(emojiData.getJson("user"));
 
         if (emojiData.containsKey("require_colons"))
             require_colons = emojiData.getBoolean("require_colons");
@@ -65,6 +68,11 @@ public class Emoji {
         if (available != null)
             builder.append("available", available);
         return builder.toString();
+    }
+
+    //getter
+    public String asMention(){
+        return getEmojiMention(this);
     }
 
     public String getID() {

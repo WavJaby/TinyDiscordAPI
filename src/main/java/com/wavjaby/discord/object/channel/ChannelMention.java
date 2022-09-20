@@ -11,7 +11,7 @@ public class ChannelMention {
     public ChannelMention(JsonObject mentionData) {
         id = mentionData.getString("id");
         guild_id = mentionData.getString("guild_id");
-        type = mentionData.getInteger("type");
+        type = mentionData.getInt("type");
         mane = mentionData.getString("mane");
     }
 }

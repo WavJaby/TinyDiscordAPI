@@ -16,14 +16,14 @@ public class Role {
     public Role(JsonObject roleData) {
         id = roleData.getString("id");
         name = roleData.getString("name");
-        color = roleData.getInteger("color");
+        color = roleData.getInt("color");
         hoist = roleData.getBoolean("hoist");
-        position = roleData.getInteger("position");
+        position = roleData.getInt("position");
         permissions = roleData.getString("permissions");
         managed = roleData.getBoolean("managed");
         mentionable = roleData.getBoolean("mentionable");
         if (roleData.containsKey("tags"))
-            tags = new RoleTag(roleData.get("tags"));
+            tags = new RoleTag(roleData.getJson("tags"));
     }
 
     public String getID() {

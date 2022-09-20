@@ -1,13 +1,15 @@
 package com.wavjaby.discord;
 
 import com.wavjaby.discord.object.guild.Guild;
+import com.wavjaby.discord.object.interaction.InteractionCommand;
+import com.wavjaby.discord.object.interaction.InteractionComponent;
 import com.wavjaby.discord.object.interaction.InteractionObject;
+import com.wavjaby.discord.object.message.MessageObject;
 
 public class DiscordEvent {
 
     /**
      * Guild Event
-     * @param guild
      */
     public void onGuildReady(Guild guild) {
     }
@@ -15,12 +17,22 @@ public class DiscordEvent {
     public void onGuildCreate(Guild guild) {
     }
 
-    public void onSlashCommand(InteractionObject interaction) {
+    /**
+     * Message Event
+     */
+
+    public void onMessageCreate(MessageObject message) {
     }
 
-    public void onButtonClick(InteractionObject interaction) {
+    /**
+     * Interaction Event
+     */
+    public void onSlashCommand(InteractionCommand commandInteraction) {
     }
 
-    public void onSelectMenu(InteractionObject interaction) {
+    public void onButtonClick(InteractionComponent componentInteraction) {
+    }
+
+    public void onSelectMenu(InteractionComponent componentInteraction) {
     }
 }

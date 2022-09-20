@@ -13,6 +13,8 @@ public class User {
     private boolean bot;
     private boolean system;
     private boolean mfa_enabled;
+    private String banner;
+    private int accent_color;
     private String locale;
     private boolean verified;
     private String email;
@@ -24,8 +26,7 @@ public class User {
         id = userData.getString("id");
         username = userData.getString("username");
         discriminator = userData.getString("discriminator");
-        avatar = CDNEndpoints.getUserAvatar(id,
-                userData.getString("avatar"));
+        avatar = CDNEndpoints.getUserAvatar(id, userData.getString("avatar"));
 
         if (userData.containsKey("bot"))
             bot = userData.getBoolean("bot");
@@ -33,18 +34,19 @@ public class User {
             system = userData.getBoolean("system");
         if (userData.containsKey("mfa_enabled"))
             mfa_enabled = userData.getBoolean("mfa_enabled");
-        if (userData.containsKey("locale"))
-            locale = userData.getString("locale");
+        banner = userData.getString("banner");
+        if (userData.containsKey("accent_color"))
+            accent_color = userData.getInt("accent_color");
+        locale = userData.getString("locale");
         if (userData.containsKey("verified"))
             verified = userData.getBoolean("verified");
-        if (userData.containsKey("email"))
-            email = userData.getString("email");
+        email = userData.getString("email");
         if (userData.containsKey("flags"))
-            flags = userData.getInteger("flags");
+            flags = userData.getInt("flags");
         if (userData.containsKey("premium_type"))
-            premium_type = userData.getInteger("premium_type");
+            premium_type = userData.getInt("premium_type");
         if (userData.containsKey("public_flags"))
-            public_flags = userData.getInteger("public_flags");
+            public_flags = userData.getInt("public_flags");
     }
 
     @Override

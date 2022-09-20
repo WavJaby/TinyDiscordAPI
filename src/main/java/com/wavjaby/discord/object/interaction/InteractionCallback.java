@@ -18,7 +18,9 @@ public class InteractionCallback {
 
     public InteractionCallback() {
     }
-
+    public InteractionCallback(String content) {
+        this.content = content;
+    }
     public InteractionCallback(String content, List<Embed> embeds, List<Component> components) {
         this.content = content;
         this.embeds = embeds;

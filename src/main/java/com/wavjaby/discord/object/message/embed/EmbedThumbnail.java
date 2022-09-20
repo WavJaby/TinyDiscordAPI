@@ -12,9 +12,9 @@ public class EmbedThumbnail{
         url = thumbnailData.getString("url");
         proxy_url = thumbnailData.getString("proxy_url");
         if (thumbnailData.containsKey("height"))
-            height = thumbnailData.getInteger("height");
+            height = thumbnailData.getInt("height");
         if (thumbnailData.containsKey("width"))
-            width = thumbnailData.getInteger("width");
+            width = thumbnailData.getInt("width");
     }
 
     public String getUrl() {

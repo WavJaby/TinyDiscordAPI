@@ -2,16 +2,20 @@ package com.wavjaby.discord;
 
 import com.wavjaby.discord.httpsender.DiscordDataSender;
 import com.wavjaby.discord.object.guild.Guild;
-import com.wavjaby.discord.object.interaction.InteractionObject;
+import com.wavjaby.discord.object.interaction.InteractionCommand;
+import com.wavjaby.discord.object.interaction.InteractionComponent;
 import com.wavjaby.discord.object.interaction.InteractionType;
 import com.wavjaby.discord.object.message.component.ComponentType;
+import com.wavjaby.discord.object.slashcommand.SlashCommand;
+import com.wavjaby.discord.object.slashcommand.SlashCommandListener;
 import com.wavjaby.discord.values.gateway.EventType;
+import com.wavjaby.json.JsonArray;
 import com.wavjaby.json.JsonObject;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.function.Consumer;
-
-import static com.wavjaby.discord.values.gateway.EventType.GUILD_CREATE;
-import static com.wavjaby.discord.values.gateway.EventType.READY;
 
 public class DiscordEventHandler {
     private final DiscordBot bot;
@@ -19,8 +23,8 @@ public class DiscordEventHandler {
 
     private int length = 0;
     private DiscordEvent[] eventHandlers = new DiscordEvent[2];
-
-    boolean guildReady;
+    private final Map<String, SlashCommandListener> registeredCommand = new HashMap<>();
+    private final HashSet<String> readyGuild = new HashSet<>();
 
     DiscordEventHandler(DiscordBot bot, DiscordDataSender dataSender) {
         this.bot = bot;
@@ -28,32 +32,31 @@ public class DiscordEventHandler {
     }
 
     void onEvent(EventType type, JsonObject data) {
-        //判斷是不是guild 初始化
-        if (type == READY) {
-            guildReady = true;
-        } else if (guildReady && type != GUILD_CREATE)
-            guildReady = false;
-
         switch (type) {
             case READY:
                 break;
             case GUILD_CREATE:
-                Guild guild = new Guild(data, dataSender);
+                Guild guild = new Guild(data, dataSender, registeredCommand);
                 bot.guilds.put(guild.getID(), guild);
-                if (guildReady)
+                if (readyGuild.contains(guild.getID())) {
                     forEach(i -> i.onGuildReady(guild));
-                else
+                    readyGuild.remove(guild.getID());
+                } else
                     forEach(i -> i.onGuildCreate(guild));
                 break;
             case INTERACTION_CREATE:
-                InteractionObject interaction = new InteractionObject(data, bot);
-                if (interaction.getType() == InteractionType.APPLICATION_COMMAND)
-                    forEach(i -> i.onSlashCommand(interaction));
-                if (interaction.getType() == InteractionType.MESSAGE_COMPONENT) {
-                    if (interaction.getComponentType() == ComponentType.BUTTON)
-                        forEach(i -> i.onButtonClick(interaction));
-                    else if (interaction.getComponentType() == ComponentType.SELECT_MENU)
-                        forEach(i -> i.onSelectMenu(interaction));
+                InteractionType interactionType = InteractionType.valueOf(data.getInt("type"));
+                if (interactionType == InteractionType.APPLICATION_COMMAND) {
+                    InteractionCommand commandInteraction = new InteractionCommand(data, bot);
+                    forEach(i -> i.onSlashCommand(commandInteraction));
+                    SlashCommandListener slashCommand = registeredCommand.get(commandInteraction.getCommandID());
+                    if (slashCommand != null) slashCommand.onSlashCommand(commandInteraction);
+                } else if (interactionType == InteractionType.MESSAGE_COMPONENT) {
+                    InteractionComponent componentInteraction = new InteractionComponent(data, bot);
+                    if (componentInteraction.getComponentType() == ComponentType.BUTTON)
+                        forEach(i -> i.onButtonClick(componentInteraction));
+                    else if (componentInteraction.getComponentType() == ComponentType.SELECT_MENU)
+                        forEach(i -> i.onSelectMenu(componentInteraction));
                 }
                 break;
             default:
@@ -71,7 +74,14 @@ public class DiscordEventHandler {
         if (length + 1 == eventHandlers.length) {
             DiscordEvent[] cache = new DiscordEvent[(int) (eventHandlers.length * 1.5)];
             System.arraycopy(eventHandlers, 0, cache, 0, length);
+            eventHandlers = cache;
         }
         eventHandlers[length++] = event;
+    }
+
+    public void setReadyGuild(JsonArray guilds) {
+        readyGuild.clear();
+        for (Object i : guilds)
+            readyGuild.add(((JsonObject) i).getString("id"));
     }
 }

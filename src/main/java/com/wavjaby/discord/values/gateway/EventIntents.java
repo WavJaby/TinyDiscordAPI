@@ -34,6 +34,8 @@ public enum EventIntents {
 
     GUILD_EMOJIS(1 << 3),
 //    GUILD_EMOJIS_UPDATE
+//    GUILD_STICKERS_UPDATE
+
 
     GUILD_INTEGRATIONS(1 << 4),
 //    GUILD_INTEGRATIONS_UPDATE
@@ -81,8 +83,10 @@ public enum EventIntents {
 //    MESSAGE_REACTION_REMOVE_ALL
 //    MESSAGE_REACTION_REMOVE_EMOJI
 
-    DIRECT_MESSAGE_TYPING(1 << 14);
+    DIRECT_MESSAGE_TYPING(1 << 14),
 //    TYPING_START
+
+    ALL(0);
 
     private int value;
 

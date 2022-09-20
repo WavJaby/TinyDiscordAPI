@@ -12,7 +12,7 @@ public class Team {
     Team(JsonObject teamData){
         icon = teamData.getString("icon");
         id = teamData.getString("id");
-        members = new TeamMembers(teamData.get("members"));
+        members = new TeamMembers(teamData.getJson("members"));
         name = teamData.getString("name");
         owner_user_id = teamData.getString("owner_user_id");
     }

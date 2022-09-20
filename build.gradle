@@ -2,15 +2,25 @@ plugins {
     id 'java'
 }
 
-group 'org.example'
-version '1.0-SNAPSHOT'
+group 'com.wavjaby.discord'
+version '0.0.1-SNAPSHOT'
 
+compileJava.options.encoding = 'UTF-8'
+sourceCompatibility = 1.8 // java 8
+targetCompatibility = 1.8
 repositories {
     mavenCentral()
-    maven{url 'https://jitpack.io'}
+    maven { url 'https://s01.oss.sonatype.org/content/repositories/snapshots/' }
+}
+
+wrapper {
+    gradleVersion = "7.1.1"
+    distributionType = Wrapper.DistributionType.ALL
 }
 
 dependencies {
-    compile 'junit:junit:4.12'
-    compile 'com.github.WavJaby:TinyJson:v0.0.0'
+    implementation 'io.github.WavJaby:tiny-json:0.0.2'
+    implementation files('D:\\MyProjects\\Java\\WebSocket\\out\\WebSocket.jar')
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.0'
 }

@@ -12,7 +12,7 @@ public class ThreadMetadata {
 
     ThreadMetadata(JsonObject metadataData){
         archived = metadataData.getBoolean("archived");
-        auto_archive_duration = metadataData.getInteger("auto_archive_duration");
+        auto_archive_duration = metadataData.getInt("auto_archive_duration");
         archive_timestamp = OffsetDateTime.parse(metadataData.getString("archive_timestamp"));
         locked = metadataData.getBoolean("locked");
     }

@@ -1,37 +1,38 @@
-package com.wavjaby.discord.object;
+package com.wavjaby.discord;
 
 import com.wavjaby.discord.DiscordBot;
 import com.wavjaby.discord.values.gateway.Opcode;
+import com.wavjaby.websocket.client.SocketClient;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public class HeartBeat {
     private final ScheduledExecutorService heartBeatThread = Executors.newSingleThreadScheduledExecutor();
-    private final String heartBeatFrame, heartBeatFrameEnd;
-    private final long interval;
-    private final DiscordBot gateway;
+    private ScheduledFuture<?> future;
+    private final String heartBeatFrame;
+    private final SocketClient gateway;
+    private final DiscordBot bot;
 
-    public HeartBeat(DiscordBot gateway, long interval) {
+    public HeartBeat(SocketClient gateway, DiscordBot bot, long interval) {
         heartBeatFrame = "{\"s\":null,\"t\":null,\"op\":" + Opcode.Heartbeat + ",\"d\":";
-        heartBeatFrameEnd = "}";
 
         this.gateway = gateway;
-        this.interval = interval;
-    }
+        this.bot = bot;
 
-    public void startHeartBeat() {
-        heartBeatThread.scheduleWithFixedDelay(
+        future = heartBeatThread.scheduleWithFixedDelay(
                 this::heartBeat,
-                0, interval, TimeUnit.MILLISECONDS);
+                interval / 10, interval, TimeUnit.MILLISECONDS);
     }
 
     public void heartBeat() {
-        gateway.GatewayData(heartBeatFrame + gateway.sequence + heartBeatFrameEnd);
+        gateway.sendMessage(heartBeatFrame + bot.sequence + '}');
     }
 
     public void stop() {
+        future.cancel(true);
         heartBeatThread.shutdown();
         try {
             heartBeatThread.awaitTermination(1000, TimeUnit.MILLISECONDS);

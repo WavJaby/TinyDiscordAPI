@@ -1,13 +1,31 @@
 package com.wavjaby.discord.object.slashcommand;
 
-public class CommandOptionType {
-    public final static int SUB_COMMAND = 1;
-    public final static int SUB_COMMAND_GROUP = 2;
-    public final static int STRING = 3;
-    public final static int INTEGER = 4;
-    public final static int BOOLEAN = 5;
-    public final static int USER = 6;
-    public final static int CHANNEL = 7;
-    public final static int ROLE = 8;
-    public final static int MENTIONABLE = 9;
+public enum CommandOptionType {
+    SUB_COMMAND(1),
+    SUB_COMMAND_GROUP(2),
+    STRING(3),
+    INTEGER(4),
+    BOOLEAN(5),
+    USER(6),
+    CHANNEL(7),
+    ROLE(8),
+    MENTIONABLE(9),
+    NUMBER(10),
+    ATTACHMENT(11),
+
+    UNKNOWN(-1);
+
+
+    public final int value;
+
+    CommandOptionType(int value) {
+        this.value = value;
+    }
+
+    public static CommandOptionType valueOf(int type) {
+        for (CommandOptionType i : values())
+            if (i.value == type)
+                return i;
+        return UNKNOWN;
+    }
 }

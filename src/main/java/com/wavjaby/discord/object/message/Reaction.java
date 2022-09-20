@@ -9,9 +9,9 @@ public class Reaction {
     private Emoji emoji;
 
     public Reaction(JsonObject reactionData) {
-        count = reactionData.getInteger("count");
+        count = reactionData.getInt("count");
         me = reactionData.getBoolean("me");
-        emoji = new Emoji(reactionData.get("emoji"));
+        emoji = new Emoji(reactionData.getJson("emoji"));
     }
 
     public int getCount() {

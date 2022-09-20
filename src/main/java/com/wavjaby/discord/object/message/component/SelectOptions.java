@@ -15,7 +15,7 @@ public class SelectOptions {
         value = optionData.getString("value");
         description = optionData.getString("description");
         if (optionData.containsKey("emoji"))
-            emoji = new Emoji(optionData.get("emoji"));
+            emoji = new Emoji(optionData.getJson("emoji"));
         if (optionData.containsKey("default"))
             isDefault = optionData.getBoolean("default");
     }

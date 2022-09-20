@@ -1,5 +1,6 @@
 package com.wavjaby.discord.object.channel;
 
+import com.wavjaby.discord.MultiPartData;
 import com.wavjaby.discord.httpsender.DiscordDataSender;
 import com.wavjaby.discord.object.guild.Guild;
 import com.wavjaby.discord.object.message.MessageObject;
@@ -39,10 +40,9 @@ public class Channel {
     private int default_auto_archive_duration;      //?
 
     //other
-    private DiscordDataSender dataSender;
+    private final DiscordDataSender dataSender;
     private Guild guild;
     private Map<String, MessageObject> messages;
-
 
     public Channel(JsonObject channelData, Guild guild, DiscordDataSender dataSender) {
         this.dataSender = dataSender;
@@ -50,14 +50,14 @@ public class Channel {
         messages = new HashMap<>();
 
         id = channelData.getString("id");
-        type = channelData.getInteger("type");
+        type = channelData.getInt("type");
         if (channelData.containsKey("guild_id"))
             guild_id = channelData.getString("guild_id");                        //?
         if (channelData.containsKey("position"))
-            position = channelData.getInteger("position");                           //?
+            position = channelData.getInt("position");                           //?
         permission_overwrites = new HashMap<>();
         if (channelData.containsKey("permission_overwrites"))
-            for (Object i : channelData.getJsonArray("permission_overwrites")) {      //?
+            for (Object i : channelData.getArray("permission_overwrites")) {      //?
                 PermissionOverwrite overwrite = new PermissionOverwrite((JsonObject) i);
                 permission_overwrites.put(overwrite.getId(), overwrite);
             }
@@ -67,14 +67,14 @@ public class Channel {
             nsfw = channelData.getBoolean("nsfw");                           //?
         last_message_id = channelData.getString("last_message_id");                 //?
         if (channelData.containsKey("bitrate"))
-            bitrate = channelData.getInteger("bitrate");                            //?
+            bitrate = channelData.getInt("bitrate");                            //?
         if (channelData.containsKey("user_limit"))
-            user_limit = channelData.getInteger("user_limit");                         //?
+            user_limit = channelData.getInt("user_limit");                         //?
         if (channelData.containsKey("rate_limit_per_user"))
-            rate_limit_per_user = channelData.getInteger("rate_limit_per_user");                //?
+            rate_limit_per_user = channelData.getInt("rate_limit_per_user");                //?
         recipients = new HashMap<>();
         if (channelData.containsKey("recipients"))
-            for (Object i : channelData.getJsonArray("recipients")) {      //?
+            for (Object i : channelData.getArray("recipients")) {      //?
                 User user = new User((JsonObject) i);
                 recipients.put(user.getId(), user);
             }
@@ -86,23 +86,22 @@ public class Channel {
             last_pin_timestamp = OffsetDateTime.parse(channelData.getString("last_pin_timestamp"));      //?
         rtc_region = channelData.getString("rtc_region");                      //?
         if (channelData.containsKey("video_quality_mode"))
-            video_quality_mode = channelData.getInteger("video_quality_mode");                 //?
+            video_quality_mode = channelData.getInt("video_quality_mode");                 //?
         if (channelData.containsKey("message_count"))
-            message_count = channelData.getInteger("message_count");                      //?
+            message_count = channelData.getInt("message_count");                      //?
         if (channelData.containsKey("member_count"))
-            member_count = channelData.getInteger("member_count");                       //?
+            member_count = channelData.getInt("member_count");                       //?
         if (channelData.containsKey("thread_metadata"))
-            thread_metadata = new ThreadMetadata(channelData.get("thread_metadata"));         //?
+            thread_metadata = new ThreadMetadata(channelData.getJson("thread_metadata"));         //?
         if (channelData.containsKey("member"))
-            member = new ThreadMember(channelData.get("member"));                    //?
+            member = new ThreadMember(channelData.getJson("member"));                    //?
         if (channelData.containsKey("default_auto_archive_duration"))
-            default_auto_archive_duration = channelData.getInteger("default_auto_archive_duration");      //?
+            default_auto_archive_duration = channelData.getInt("default_auto_archive_duration");      //?
     }
 
     public void sendMessage(MessageObject messageObject) {
         dataSender.sendMessage(id, messageObject);
     }
-
 
     public MessageObject getMessageByID(String messageID) {
         MessageObject message = messages.get(messageID);
@@ -116,8 +115,13 @@ public class Channel {
         return message;
     }
 
+    public void sendMultiPart(String endpoint, String method, MultiPartData multiPart) {
+        endpoint = endpoint.replace("{channel.id}", id);
+        dataSender.sendMultiPart(endpoint, method, multiPart);
+    }
 
     //getter
+
     public String getID() {
         return id;
     }

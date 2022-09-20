@@ -34,7 +34,7 @@ public class Application {
 
         if (applicationData.containsKey("rpc_origins")) {
             rpc_origins = new ArrayList<>();
-            for (Object i : applicationData.getJsonArray("rpc_origins"))
+            for (Object i : applicationData.getArray("rpc_origins"))
                 rpc_origins.add((String) i);                       //?
         }
 
@@ -45,17 +45,17 @@ public class Application {
         terms_of_service_url = applicationData.getString("terms_of_service_url");    //?
         privacy_policy_url = applicationData.getString("privacy_policy_url");      //?
         if (applicationData.containsKey("owner"))
-            owner = new User(applicationData.get("owner"));        //?
+            owner = new User(applicationData.getJson("owner"));        //?
         summary = applicationData.getString("summary");
         verify_key = applicationData.getString("verify_key");
         if (applicationData.containsKey("team"))
-            team = new Team(applicationData.get("team"));
+            team = new Team(applicationData.getJson("team"));
         guild_id = applicationData.getString("guild_id");                //?
         primary_sku_id = applicationData.getString("primary_sku_id");          //?
         slug = applicationData.getString("slug");                    //?
         cover_image = applicationData.getString("cover_image");             //?
         if (applicationData.containsKey("flags"))
-            flags = applicationData.getInteger("flags");      //?
+            flags = applicationData.getInt("flags");      //?
     }
 
     public String getID() {

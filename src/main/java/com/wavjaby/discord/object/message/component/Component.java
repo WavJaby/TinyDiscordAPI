@@ -13,12 +13,12 @@ public class Component {
     private List<Component> components;
 
     public Component(JsonObject componentData) {
-        type = ComponentType.valueOf(componentData.getInteger("type"));
+        type = ComponentType.valueOf(componentData.getInt("type"));
         if (componentData.containsKey("components")) {
             components = new ArrayList<>();
-            for (Object i : componentData.getJsonArray("components")) {
+            for (Object i : componentData.getArray("components")) {
                 JsonObject data = (JsonObject) i;
-                ComponentType thisType = ComponentType.valueOf(data.getInteger("type"));
+                ComponentType thisType = ComponentType.valueOf(data.getInt("type"));
                 if (thisType == ComponentType.BUTTON)
                     components.add(new Button(data));
                 else if (thisType == ComponentType.SELECT_MENU)

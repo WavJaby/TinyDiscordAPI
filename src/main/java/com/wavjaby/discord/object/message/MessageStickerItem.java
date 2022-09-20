@@ -10,7 +10,7 @@ public class MessageStickerItem {
     MessageStickerItem(JsonObject stickerItemData) {
         id = stickerItemData.getString("id");
         name = stickerItemData.getString("name");
-        format_type = stickerItemData.getInteger("format_type");
+        format_type = stickerItemData.getInt("format_type");
     }
 
 }

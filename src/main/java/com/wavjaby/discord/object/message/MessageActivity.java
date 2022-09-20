@@ -7,7 +7,7 @@ public class MessageActivity {
     private String party_id;
 
     MessageActivity(JsonObject activityData){
-        type = activityData.getInteger("type");
+        type = activityData.getInt("type");
         party_id = activityData.getString("party_id");
     }
 

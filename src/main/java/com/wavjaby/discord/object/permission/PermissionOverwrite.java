@@ -10,7 +10,7 @@ public class PermissionOverwrite {
 
     public PermissionOverwrite(JsonObject overwriteData) {
         id = overwriteData.getString("id");
-        type = overwriteData.getInteger("type");
+        type = overwriteData.getInt("type");
         allow = overwriteData.getString("allow");
         deny = overwriteData.getString("deny");
     }

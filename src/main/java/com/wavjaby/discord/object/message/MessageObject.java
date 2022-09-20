@@ -73,9 +73,9 @@ public class MessageObject {
         channel = guild.getChannelByID(channel_id);
         guild_id = messageData.getString("guild_id");
         this.guild = guild;
-        author = new User(messageData.get("author"));
+        author = new User(messageData.getJson("author"));
         if (messageData.containsKey("member"))
-            member = new Member(messageData.get("member"), guild);
+            member = new Member(messageData.getJson("member"), guild);
         content = messageData.getString("content");
         if (messageData.containsKey("timestamp"))
             timestamp = OffsetDateTime.parse(messageData.getString("timestamp"));
@@ -84,68 +84,68 @@ public class MessageObject {
         tts = messageData.getBoolean("tts");
         mention_everyone = messageData.getBoolean("mention_everyone");
         mentions = new HashMap<>();
-        for (Object i : messageData.getJsonArray("mentions")) {
+        for (Object i : messageData.getArray("mentions")) {
             Member member = new Member((JsonObject) i, guild);
             mentions.put(member.getID(), member);
         }
         mention_roles = new HashMap<>();
-        for (Object i : messageData.getJsonArray("mention_roles")) {
+        for (Object i : messageData.getArray("mention_roles")) {
             String roleID = ((JsonObject) i).getString("id");
             mention_roles.put(roleID, guild.getRoleByID(roleID));
         }
         if (messageData.containsKey("mention_channels")) {
             mention_channels = new ArrayList<>();
-            for (Object i : messageData.getJsonArray("mention_channels")) {
+            for (Object i : messageData.getArray("mention_channels")) {
                 mention_channels.add(new ChannelMention((JsonObject) i));
             }
         }
         attachments = new ArrayList<>();
-        for (Object i : messageData.getJsonArray("attachments")) {
+        for (Object i : messageData.getArray("attachments")) {
             attachments.add(new Attachment((JsonObject) i));
         }
         embeds = new ArrayList<>();
-        for (Object i : messageData.getJsonArray("embeds")) {
+        for (Object i : messageData.getArray("embeds")) {
             embeds.add(new Embed((JsonObject) i));
         }
         if (messageData.containsKey("reactions")) {
             reactions = new ArrayList<>();
-            for (Object i : messageData.getJsonArray("reactions")) {
+            for (Object i : messageData.getArray("reactions")) {
                 reactions.add(new Reaction((JsonObject) i));
             }
         }
         nonce = messageData.getString("nonce");
         pinned = messageData.getBoolean("pinned");
         webhook_id = messageData.getString("webhook_id");
-        type = messageData.getInteger("type");
+        type = messageData.getInt("type");
         if (messageData.containsKey("activity"))
-            activity = new MessageActivity(messageData.get("activity"));
+            activity = new MessageActivity(messageData.getJson("activity"));
         if (messageData.containsKey("application"))
-            application = new Application(messageData.get("application"));
+            application = new Application(messageData.getJson("application"));
         application_id = messageData.getString("application_id");
         if (messageData.containsKey("message_reference"))
-            message_reference = new MessageReference(messageData.get("message_reference"));
-        flags = messageData.getInteger("flags");
+            message_reference = new MessageReference(messageData.getJson("message_reference"));
+        flags = messageData.getInt("flags");
         if (messageData.notNull("referenced_message"))
-            referenced_message = channel.getMessageByID(messageData.get("referenced_message").getString("id"));
+            referenced_message = channel.getMessageByID(messageData.getJson("referenced_message").getString("id"));
         if (messageData.containsKey("interaction"))
-            interaction = new MessageInteraction(messageData.get("interaction"));
+            interaction = new MessageInteraction(messageData.getJson("interaction"));
         if (messageData.containsKey("thread"))
-            thread = guild.getChannelByID(messageData.get("thread").getString("id"));
+            thread = guild.getChannelByID(messageData.getJson("thread").getString("id"));
         if (messageData.containsKey("components")) {
             components = new ArrayList<>();
-            for (Object i : messageData.getJsonArray("components")) {
+            for (Object i : messageData.getArray("components")) {
                 components.add(new Component((JsonObject) i));
             }
         }
         if (messageData.containsKey("sticker_items")) {
             sticker_items = new ArrayList<>();
-            for (Object i : messageData.getJsonArray("sticker_items")) {
+            for (Object i : messageData.getArray("sticker_items")) {
                 sticker_items.add(new MessageStickerItem((JsonObject) i));
             }
         }
         if (messageData.containsKey("stickers")) {
             stickers = new ArrayList<>();
-            for (Object i : messageData.getJsonArray("stickers")) {
+            for (Object i : messageData.getArray("stickers")) {
                 stickers.add(new MessageSticker((JsonObject) i));
             }
         }

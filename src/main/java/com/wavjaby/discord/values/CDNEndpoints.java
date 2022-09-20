@@ -22,4 +22,5 @@ public class CDNEndpoints {
     public static String getUserAvatar(String userID, String userAvatar) {
         return ImageBaseUrl + "avatars/" + userID + "/" + userAvatar + ".png";
     }
+
 }

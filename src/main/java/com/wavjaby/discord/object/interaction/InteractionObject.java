@@ -5,8 +5,6 @@ import com.wavjaby.discord.object.channel.Channel;
 import com.wavjaby.discord.object.guild.Guild;
 import com.wavjaby.discord.object.guild.Member;
 import com.wavjaby.discord.object.message.MessageObject;
-import com.wavjaby.discord.object.message.component.ComponentType;
-import com.wavjaby.discord.object.slashcommand.InteractionData;
 import com.wavjaby.discord.object.user.User;
 import com.wavjaby.json.JsonObject;
 
@@ -16,8 +14,7 @@ public class InteractionObject {
     //discord give
     private String id;
     private String application_id;
-    private InteractionType type;
-    private InteractionData data;    //?
+    private InteractionType interactionType;
     private Guild guild;                    //?
     private Channel channel;                //?
     private Member member;                  //?
@@ -32,15 +29,14 @@ public class InteractionObject {
     public InteractionObject(JsonObject commandData, DiscordBot bot) {
         this.bot = bot;
 
-        version = commandData.getInteger("version");
-        type = InteractionType.valueOf(commandData.getInteger("type"));
+        version = commandData.getInt("version");
+        interactionType = InteractionType.valueOf(commandData.getInt("type"));
         token = commandData.getString("token");
-        member = new Member(commandData.get("member"));
+        member = new Member(commandData.getJson("member"));
+        user = new User(commandData.getJson("member"));
         id = commandData.getString("id");
-        if(commandData.containsKey("guild_id"))
+        if (commandData.containsKey("guild_id"))
             guild = bot.getGuildByID(commandData.getString("guild_id"));
-        if (commandData.containsKey("data"))
-            data = new InteractionData(commandData.get("data"));
         channel = guild.getChannelByID(commandData.getString("channel_id"));
         application_id = commandData.getString("application_id");
 
@@ -56,15 +52,23 @@ public class InteractionObject {
                 interactionResponse.toString());
     }
 
+    public void replyLater(boolean ephemeral) {
+        InteractionResponse response = new InteractionResponse(DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE);
+        if (ephemeral) response.setEphemeral(true);
+        reply(response);
+    }
+
     public void replyLater() {
-        reply(new InteractionResponse(DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE));
+        InteractionResponse response = new InteractionResponse(DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE);
+        response.setEphemeral(false);
+        reply(response);
     }
 
     public Channel getChannel() {
         return channel;
     }
 
-    public String getID() {
+    public String getInteractionID() {
         return id;
     }
 
@@ -80,19 +84,7 @@ public class InteractionObject {
         return member;
     }
 
-    public InteractionData getOption() {
-        return data;
-    }
-
-    public ComponentType getComponentType() {
-        return data.getType();
-    }
-
-    public String getCommand() {
-        return data.getName();
-    }
-
-    public InteractionType getType() {
-        return type;
+    public InteractionType getInteractionType() {
+        return interactionType;
     }
 }

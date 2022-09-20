@@ -23,13 +23,13 @@ public class MessageSticker {
         description = stickerData.getString("description");
         tags = stickerData.getString("tags");
         asset = stickerData.getString("asset");
-        format_type = stickerData.getInteger("format_type");
+        format_type = stickerData.getInt("format_type");
         if (stickerData.containsKey("available"))
             available = stickerData.getBoolean("available");
         guild_id = stickerData.getString("guild_id");
         if (stickerData.containsKey("user"))
-            user = new User(stickerData.get("user"));
+            user = new User(stickerData.getJson("user"));
         if (stickerData.containsKey("sort_value"))
-            sort_value = stickerData.getInteger("sort_value");
+            sort_value = stickerData.getInt("sort_value");
     }
 }

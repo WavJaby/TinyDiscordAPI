@@ -20,6 +20,10 @@ public class EmbedField {
         this.inline = inline;
     }
 
+    public EmbedField(boolean inline) {
+        this.inline = inline;
+    }
+
     public EmbedField(String name, String value) {
         this.name = name;
         this.value = value;
@@ -28,6 +32,8 @@ public class EmbedField {
 
     @Override
     public String toString() {
+        if (name == null || value == null)
+            return "{\"name\":\"\u200b\",\"value\":\"\u200b\",\"inline\":" + inline + "}";
         return "{\"name\":\"" + name + "\",\"value\":\"" + value + "\",\"inline\":" + inline + "}";
     }
 

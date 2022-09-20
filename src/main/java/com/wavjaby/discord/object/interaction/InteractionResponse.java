@@ -13,6 +13,7 @@ public class InteractionResponse {
 
     public InteractionResponse(Integer type) {
         this.type = type;
+        data = new InteractionCallback();
     }
 
     @Override
@@ -24,9 +25,8 @@ public class InteractionResponse {
 
     public void setEphemeral(boolean enable) {
         if (enable) {
-            if (data == null)
-                data = new InteractionCallback();
             data.addFlag(EPHEMERAL);
-        }
+        } else
+            data.removeFlag(EPHEMERAL);
     }
 }

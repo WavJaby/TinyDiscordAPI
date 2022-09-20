@@ -11,9 +11,9 @@ public class MessageInteraction {
 
     public MessageInteraction(JsonObject interactionData){
         id = interactionData.getString("id");
-        type = interactionData.getInteger("type");
+        type = interactionData.getInt("type");
         name = interactionData.getString("name");
-        user = new User(interactionData.get("user"));
+        user = new User(interactionData.getJson("user"));
     }
 
 }

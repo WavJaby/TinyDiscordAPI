@@ -13,13 +13,13 @@ public class TeamMembers {
     private User user;
 
     TeamMembers(JsonObject teamMemberData) {
-        membership_state = teamMemberData.getInteger("membership_state");
+        membership_state = teamMemberData.getInt("membership_state");
         permissions = new ArrayList<>();
-        for (Object i : teamMemberData.getJsonArray("permissions")) {
+        for (Object i : teamMemberData.getArray("permissions")) {
             permissions.add((String) i);
         }
         team_id = teamMemberData.getString("team_id");
-        user = new User(teamMemberData.get("user"));
+        user = new User(teamMemberData.getJson("user"));
     }
 
     public int getMembership_state() {

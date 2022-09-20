@@ -24,11 +24,11 @@ public class Member {
     public Member(JsonObject memberData, Guild memberGuild) {
         this.memberGuild = memberGuild;
         if (memberData.containsKey("user"))
-            user = new User(memberData.get("user"));
+            user = new User(memberData.getJson("user"));
         nick = memberData.getString("nick");
 
         roles = new ArrayList<>();
-        for (Object i : memberData.getJsonArray("roles")) {
+        for (Object i : memberData.getArray("roles")) {
             roles.add((String) i);
         }
 
@@ -44,11 +44,11 @@ public class Member {
 
     public Member(JsonObject memberData) {
         if (memberData.containsKey("user"))
-            user = new User(memberData.get("user"));
+            user = new User(memberData.getJson("user"));
         nick = memberData.getString("nick");
 
         roles = new ArrayList<>();
-        for (Object i : memberData.getJsonArray("roles")) {
+        for (Object i : memberData.getArray("roles")) {
             roles.add((String) i);
         }
 
